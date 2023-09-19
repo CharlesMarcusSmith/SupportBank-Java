@@ -18,7 +18,7 @@ public class App {
 
     public static void main(String[] args) {
       //Read Line --/
-      //Add to ArrayList
+      //Add to ArrayList--/
 
       //It seems we could make a Person finder method as we are copying and pasting ArrayLists
       //I think we need to use Hash Map for index searching but not now too far gone
@@ -28,18 +28,18 @@ public class App {
 
       //PEOPLE
       //^Check if account is present --/
-      //^If not make account
-      //Edit balance deduct transaction
-      //Check if reciepient exsists, if not add them
-      //Edit balance   
+      //^If not make account--/
+      //Edit balance deduct transaction--/
+      //Check if reciepient exsists, if not add them--/
+      //Edit balance--/
       
-      //Could use a temp transaction array so we can use this for each transaction and repeatedly access data
-      //^ this would be used for both accounts
+      //Could use a temp transaction array so we can use this for each transaction and repeatedly access data--/
+      //^ this would be used for both accounts--/
 
     //Lists    
     }
 
-    //FILE READER METHODS========================================================================================================
+    //FILE READER METHODS===================================================================================
     //Reads file, then passes to assembly method a record at a time
     public void readFile(String path) throws IOException{
 		String[] transaction = new String[4];
@@ -62,9 +62,9 @@ public class App {
         }
 	}
 
-    //Assembly:
+    //Assembly Methods:=====================================================================================
     public void senderAssembly(String[] inTransaction){
-        //First Recipient (the sender - balance deducts):
+        //The sender - balance deducts):
         if(accountExsist(inTransaction[1])==true){
             //Retrieving the original account object:
             int index = getIndex(inTransaction[1]);
@@ -83,6 +83,33 @@ public class App {
             //Converting the String to double amount,
             //as a new account, they account is minus the sent value:
             double tempAmount = 0-Double.parseDouble(inTransaction[4]); 
+            
+            Account tempAccount = new Account(tempName, tempAmount);
+            listOfAccounts.add(tempAccount);
+        }
+    }
+
+    
+    public void recipientAssembly(String[] inTransaction){
+        //The recipient - balance adds):
+        if(accountExsist(inTransaction[2])==true){
+            //Retrieving the original account object:
+            int index = getIndex(inTransaction[2]);
+            Account newAccount = new Account();
+            newAccount = listOfAccounts.get(index);
+
+            //Updating account balance:
+            double addittion = Float.parseFloat(inTransaction[4]);
+            newAccount.addAmount(addittion);
+
+            //Replacing the account with its new balance:
+            listOfAccounts.set(index, newAccount);
+        }
+        else{
+            String tempName = inTransaction[2];
+            //Converting the String to double amount,
+            //as a new account, they account is minus the sent value:
+            double tempAmount = 0+Double.parseDouble(inTransaction[4]); 
             
             Account tempAccount = new Account(tempName, tempAmount);
             listOfAccounts.add(tempAccount);
