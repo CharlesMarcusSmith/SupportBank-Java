@@ -3,12 +3,124 @@
  */
 package supportbank;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+    //Global Variables:
+    List<Account> listOfAccounts = new ArrayList<>();
+
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+      //Read Line --/
+      //Add to ArrayList
+
+      //It seems we could make a Person finder method as we are copying and pasting ArrayLists
+      //I think we need to use Hash Map for index searching but not now too far gone
+      //^For failed index searches, we might need to make a patient 0 as we can't return 0 as 0 is a record.
+        
+
+
+      //PEOPLE
+      //^Check if account is present --/
+      //^If not make account
+      //Edit balance deduct transaction
+      //Check if reciepient exsists, if not add them
+      //Edit balance   
+      
+      //Could use a temp transaction array so we can use this for each transaction and repeatedly access data
+      //^ this would be used for both accounts
+
+    //Lists    
     }
+
+    //FILE READER METHODS========================================================================================================
+    //Reads file, then passes to assembly method a record at a time
+    public void readFile(String path) throws IOException{
+		String[] transaction = new String[4];
+		
+		Scanner scanner = null;
+		
+		try {
+            scanner = new Scanner(new BufferedReader(new FileReader("src/exercises/" + path)));
+
+            while (scanner.hasNext()) {
+                for(int i=0; i<4; i++){
+                    transaction[i] = scanner.next();
+                }
+                assembly(transaction);
+            }
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
+	}
+
+    //Assembly:
+    public void senderAssembly(String[] inTransaction){
+        //First Recipient (the sender - balance deducts):
+        if(accountExsist(inTransaction[1])==true){
+            //Retrieving the original account object:
+            int index = getIndex(inTransaction[1]);
+            Account newAccount = new Account();
+            newAccount = listOfAccounts.get(index);
+
+            //Updating account balance:
+            double deduction = Float.parseFloat(inTransaction[4]);
+            newAccount.deductAmount(deduction);
+
+            //Replacing the account with its new balance:
+            listOfAccounts.set(index, newAccount);
+        }
+        else{
+            String tempName = inTransaction[1];
+            //Converting the String to double amount,
+            //as a new account, they account is minus the sent value:
+            double tempAmount = 0-Double.parseDouble(inTransaction[4]); 
+            
+            Account tempAccount = new Account(tempName, tempAmount);
+            listOfAccounts.add(tempAccount);
+        }
+    }
+
+
+    //LIST OF PEOPLE METHODS:=========================================================================
+    public boolean accountExsist(String inName){
+        //use for loop then get name 
+        for(int i=0; i < listOfAccounts.size(); i++){
+            Account tempAccount = new Account();
+            tempAccount = listOfAccounts.get(i);
+
+            if(tempAccount.getName().equals(inName)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getIndex(String inName){
+        for(int i=0; i < listOfAccounts.size(); i++){
+            Account tempAccount = new Account();
+            tempAccount = listOfAccounts.get(i);
+
+            if(tempAccount.getName().equals(inName)){
+               return i;
+            }
+        }
+        return 0;
+    }
+
+    public void addPerson(Account inAccount){
+        listOfAccounts.add(inAccount);
+    }
+
+    
+
+
 }
