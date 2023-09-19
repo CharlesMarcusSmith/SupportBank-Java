@@ -4,12 +4,11 @@
 package supportbank;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class App {
     //Global Variables:
@@ -41,32 +40,36 @@ public class App {
         // and repeatedly access data--/
         // ^ this would be used for both accounts--/
 
-        //readFile("Transactions2014.csv");
+        readFile("/home/charles/Documents/Bootcamp/SupportBank-Java/Transactions2014.csv");
 
     }
 
     //FILE READER METHODS===================================================================================
     //Reads file, then passes to assembly method a record at a time
-    public static void readFile(String path) throws FileNotFoundException{
+    public static void readFile(String csvFile){
 		String[] transaction = new String[4];
-		
-		Scanner scanner = null;
-		
-		try {
-            scanner = new Scanner(new BufferedReader(new FileReader("src/exercises/" + path)));
+        String delimiter = ",";
 
-            while (scanner.hasNext()) {
-                for(int i=0; i<4; i++){
-                    transaction[i] = scanner.next();
-                }
-                senderAssembly(transaction);
-                recipientAssembly(transaction);
+        try {
+         File file = new File(csvFile);
+         FileReader fr = new FileReader(file);
+         BufferedReader br = new BufferedReader(fr);
+         String line = "";
+         String[] tempArr;
+         while((line = br.readLine()) != null) {
+            tempArr = line.split(delimiter);
+            int count = 0;
+            for(String tempStr : tempArr) {
+               transaction[count] = tempStr;
             }
-        } finally {
-            if (scanner != null) {
-                scanner.close();
-            }
-        }
+         }
+         br.close();
+         } catch(IOException ioe) {
+            ioe.printStackTrace();
+         }
+        
+        // senderAssembly(transaction);
+        // recipientAssembly(transaction);
 	}
 
     //Assembly Methods:=====================================================================================
