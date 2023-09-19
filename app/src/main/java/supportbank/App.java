@@ -47,7 +47,7 @@ public class App {
     //FILE READER METHODS===================================================================================
     //Reads file, then passes to assembly method a record at a time
     public static void readFile(String csvFile){
-		String[] transaction = new String[4];
+		String[] transaction = new String[5];
         String delimiter = ",";
 
         try {
@@ -55,21 +55,17 @@ public class App {
          FileReader fr = new FileReader(file);
          BufferedReader br = new BufferedReader(fr);
          String line = "";
-         String[] tempArr;
          while((line = br.readLine()) != null) {
-            tempArr = line.split(delimiter);
-            int count = 0;
-            for(String tempStr : tempArr) {
-               transaction[count] = tempStr;
-            }
+            transaction = line.split(delimiter);
+            senderAssembly(transaction);
+            recipientAssembly(transaction);
          }
          br.close();
          } catch(IOException ioe) {
             ioe.printStackTrace();
          }
         
-        // senderAssembly(transaction);
-        // recipientAssembly(transaction);
+        
 	}
 
     //Assembly Methods:=====================================================================================
