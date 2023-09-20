@@ -11,23 +11,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class App {
-    //Global Variables:
-    static List<Account> listOfAccounts = new ArrayList<>();
+    // Global Variables:
+    public static List<Account> listOfAccounts = new ArrayList<>();
 
+    public static void main(String[] args) {
+        // QUESTIONS TO BE ASKED:
+        // I think we need to use Hash Map for index searching but not now too far gone
+        // ^For failed index searches, we might need to make a patient 0 as we can't
+        // return 0 as 0 is a record.
+        // ! WHICH EXCEPTION IO OR FILE NOT FOUND?
+        // Is always debug if build fails a bad thing in proffessional environment?
+        // why is syso on line 98 doing... that?
 
-    public static void main(String[] args){
+        // TO
+        // DO:============================================================================
         // Read Line --/
         // Add to ArrayList--/
 
         // It seems we could make a Person finder method as we are copying and pasting
         // ArrayLists
-        
-
-        //QUESTIONS TO BE ASKED:
-        // I think we need to use Hash Map for index searching but not now too far gone
-        // ^For failed index searches, we might need to make a patient 0 as we can't
-        // return 0 as 0 is a record.
-        //! WHICH EXCEPTION IO OR FILE NOT FOUND?
 
         // PEOPLE
         // ^Check if account is present --/
@@ -40,120 +42,156 @@ public class App {
         // and repeatedly access data--/
         // ^ this would be used for both accounts--/
 
+        // Validate double is parsable --/
+        // Check format of 4 Strings, i.e. date format for record 1, blank spaces
+        // entered, blank before words, symbols, etc..
+        // Do we need temp double for validation or can we just call the double method
+        // without a holder to see if it throws
+        // What if whole record is null
+        // do a check for the top record to be skipped if all 5 inputs match headers, as
+        // we do not need an error message for this every input.
+
         readFile("/home/charles/Documents/Bootcamp/SupportBank-Java/Transactions2014.csv");
 
     }
 
-    //FILE READER METHODS===================================================================================
-    //Reads file, then passes to assembly method a record at a time
-    public static void readFile(String csvFile){
-		String[] transaction = new String[5];
+    // FILE READER
+    // METHODS===================================================================================
+    // Reads file, then passes to assembly method a record at a time
+    public static void readFile(String csvFile) {
+        String[] transaction = new String[5];
         String delimiter = ",";
 
         try {
-         File file = new File(csvFile);
-         FileReader fr = new FileReader(file);
-         BufferedReader br = new BufferedReader(fr);
-         String line = "";
-         while((line = br.readLine()) != null) {
-            transaction = line.split(delimiter);
-            senderAssembly(transaction);
-            recipientAssembly(transaction);
-         }
-         br.close();
-         } catch(IOException ioe) {
+            File file = new File(csvFile);
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                transaction = line.split(delimiter);
+                if (accountValidator(transaction) == true) {
+                    senderAssembly(transaction);
+                    recipientAssembly(transaction);
+                }
+            }
+            br.close();
+        } catch (IOException ioe) {
             ioe.printStackTrace();
-         }
-        
-        
-	}
+        }
 
-    //Assembly Methods:=====================================================================================
-    public static void senderAssembly(String[] inTransaction){
-        //The sender - balance deducts):
-        if(accountExsist(inTransaction[1])==true){
-            //Retrieving the original account object:
+    }
+
+    public static boolean accountValidator(String[] inTransaction) {
+        // Format Expected: Date(String), String, String, String, double
+        // We have to check if final record is parsable to double.
+        // Changing Date to a date format is not mustHave rightnow.
+
+        for (int i = 0; i < inTransaction.length; i++) {
+            // NULL checking
+            if (inTransaction[i] != null) {
+                if (i == 4) {
+                    try {
+                        double tempAmount;
+                        tempAmount = Double.parseDouble(inTransaction[i]);
+                    } catch (NumberFormatException nme) {
+                        System.out.println(
+                                "Error: The follwoing record could not be added as Amount was entered incorrectly.");
+                        System.out.println("0.00 format expected.");
+                        System.out.println(inTransaction.toString());
+                        return false;
+                    }
+                }
+            } else {
+                System.out.println("The following transaction was not entered, as data is missing:");
+                System.out.println(inTransaction.toString());
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Assembly
+    // Methods:=====================================================================================
+    public static void senderAssembly(String[] inTransaction) {
+        // The sender - balance deducts):
+        if (accountExsist(inTransaction[1]) == true) {
+            // Retrieving the original account object:
             int index = getIndex(inTransaction[1]);
             Account newAccount = new Account();
             newAccount = listOfAccounts.get(index);
 
-            //Updating account balance:
+            // Updating account balance:
             double deduction = Float.parseFloat(inTransaction[4]);
             newAccount.deductAmount(deduction);
 
-            //Replacing the account with its new balance:
+            // Replacing the account with its new balance:
             listOfAccounts.set(index, newAccount);
-        }
-        else{
+        } else {
             String tempName = inTransaction[1];
-            //Converting the String to double amount,
-            //as a new account, they account is minus the sent value:
-            double tempAmount = 0-Double.parseDouble(inTransaction[4]); 
-            
+            // Converting the String to double amount,
+            // as a new account, they account is minus the sent value:
+            double tempAmount = 0 - Double.parseDouble(inTransaction[4]);
+
             Account tempAccount = new Account(tempName, tempAmount);
             listOfAccounts.add(tempAccount);
         }
     }
 
-    
-    public static void recipientAssembly(String[] inTransaction){
-        //The recipient - balance adds):
-        if(accountExsist(inTransaction[2])==true){
-            //Retrieving the original account object:
+    public static void recipientAssembly(String[] inTransaction) {
+        // The recipient - balance adds):
+        if (accountExsist(inTransaction[2]) == true) {
+            // Retrieving the original account object:
             int index = getIndex(inTransaction[2]);
             Account newAccount = new Account();
             newAccount = listOfAccounts.get(index);
 
-            //Updating account balance:
+            // Updating account balance:
             double addittion = Float.parseFloat(inTransaction[4]);
             newAccount.addAmount(addittion);
 
-            //Replacing the account with its new balance:
+            // Replacing the account with its new balance:
             listOfAccounts.set(index, newAccount);
-        }
-        else{
+        } else {
             String tempName = inTransaction[2];
-            //Converting the String to double amount,
-            //as a new account, they account is minus the sent value:
-            double tempAmount = 0+Double.parseDouble(inTransaction[4]); 
-            
+            // Converting the String to double amount,
+            // as a new account, they account is minus the sent value:
+            double tempAmount = 0 + Double.parseDouble(inTransaction[4]);
+
             Account tempAccount = new Account(tempName, tempAmount);
             listOfAccounts.add(tempAccount);
         }
     }
 
-
-    //LIST OF PEOPLE METHODS:=========================================================================
-    public static boolean accountExsist(String inName){
-        //use for loop then get name 
-        for(int i=0; i < listOfAccounts.size(); i++){
+    // LIST OF PEOPLE
+    // METHODS:=========================================================================
+    public static boolean accountExsist(String inName) {
+        // use for loop then get name
+        for (int i = 0; i < listOfAccounts.size(); i++) {
             Account tempAccount = new Account();
             tempAccount = listOfAccounts.get(i);
 
-            if(tempAccount.getName().equals(inName)){
+            if (tempAccount.getName().equals(inName)) {
                 return true;
             }
         }
         return false;
     }
 
-    public static int getIndex(String inName){
-        for(int i=0; i < listOfAccounts.size(); i++){
+    public static int getIndex(String inName) {
+        for (int i = 0; i < listOfAccounts.size(); i++) {
             Account tempAccount = new Account();
             tempAccount = listOfAccounts.get(i);
 
-            if(tempAccount.getName().equals(inName)){
-               return i;
+            if (tempAccount.getName().equals(inName)) {
+                return i;
             }
         }
         return 0;
     }
 
-    public static void addPerson(Account inAccount){
+    public static void addPerson(Account inAccount) {
         listOfAccounts.add(inAccount);
     }
-
-    
-
 
 }
