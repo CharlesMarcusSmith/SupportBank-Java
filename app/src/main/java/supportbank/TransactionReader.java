@@ -18,7 +18,9 @@ public class TransactionReader {
 
          while((line = br.readLine()) != null) {
             transaction = line.split(delimiter);
-            unpack(transaction);
+            BankingSystem bs = new BankingSystem();
+            bs.unpack(transaction);
+            
          }
          br.close();
          } catch(IOException ioe) {
