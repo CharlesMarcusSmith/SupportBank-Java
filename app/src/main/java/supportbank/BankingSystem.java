@@ -10,12 +10,15 @@ public class BankingSystem {
         String sender = transaction[1].trim();
         String recipient = transaction[2].trim();
         // String context = transaction[3].trim();
-        // String amount = transaction[4].trim();
+
+        
+        String amount = transaction[4].trim();
         
 
         
         addAccount(sender);
         addAccount(recipient);
+        makeTransaction(sender, recipient, amount);
     }
 
 

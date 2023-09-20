@@ -15,12 +15,20 @@ public class TransactionReader {
          FileReader fr = new FileReader(file);
          BufferedReader br = new BufferedReader(fr);
          String line = "";
+         boolean headingSkipped = false;
+
 
          while((line = br.readLine()) != null) {
             transaction = line.split(delimiter);
+
+            //SKIP HEADINGS:
+            if(headingSkipped == false){
+               headingSkipped = true;
+               continue;
+            }
+
             BankingSystem bs = new BankingSystem();
             bs.unpack(transaction);
-            
          }
          br.close();
          } catch(IOException ioe) {
